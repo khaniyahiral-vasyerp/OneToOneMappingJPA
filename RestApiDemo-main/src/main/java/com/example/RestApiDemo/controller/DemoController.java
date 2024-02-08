@@ -1,85 +1,86 @@
 package com.example.RestApiDemo.controller;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-
+import com.example.RestApiDemo.dto.ResponseDTO;
 import com.example.RestApiDemo.model.Book;
 import com.example.RestApiDemo.model.Student;
-import com.example.RestApiDemo.service.BookService;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import com.example.RestApiDemo.service.BookServiceimpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/books")
 public class DemoController {
 
 	@Autowired
-	private BookService bookservice1;
+	private BookServiceimpl bookService;
 
-	// save operation
 	@PostMapping("/booksadd")
-	public Book saveBoook(@RequestBody Book book) {
-		return bookservice1.saveBook(book);
-
+	public ResponseEntity<ResponseDTO<Book>> saveBook(@RequestBody Book book) {
+		Book savedBook = bookService.saveBook(book);
+		ResponseDTO<Book> responseDTO = new ResponseDTO<>("Book added successfully", "success", savedBook);
+		return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
 	}
 
-	// read operation
 	@GetMapping("/books")
-	public List<Book> getAllBooks() {
-		return bookservice1.getAllBooks();
-
+	public ResponseEntity<ResponseDTO<List<Book>>> getAllBooks() {
+		List<Book> books = bookService.getAllBooks();
+		ResponseDTO<List<Book>> responseDTO = new ResponseDTO<>("Books retrieved successfully", "success", books);
+		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
 	}
 
-	// update
 	@PutMapping("/booksupdate/{id}")
-	public Book updateBook(@RequestBody Book boook, @PathVariable("id") Integer id) {
-		return bookservice1.updateBook(boook, id);
+	public ResponseEntity<ResponseDTO<Book>> updateBook(@RequestBody Book book, @PathVariable("id") Integer id) {
+		Book updatedBook = bookService.updateBook(book, id);
+		ResponseDTO<Book> responseDTO = new ResponseDTO<>("Book updated successfully", "success", updatedBook);
+		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
 	}
 
-	// delete
-	@DeleteMapping("books/{id}")
-	public String deletebookbyid(@PathVariable("id") Integer id) {
-		bookservice1.deletebookbyid(id);
-		return "deleted";
+	@DeleteMapping("/books/{id}")
+	public ResponseEntity<ResponseDTO<Void>> deleteBookById(@PathVariable("id") Integer id) {
+		bookService.deletebookbyid(id);
+		ResponseDTO<Void> responseDTO = new ResponseDTO<>("Book deleted successfully", "success", null);
+		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
 	}
 
-	// for student
 	@GetMapping("/students")
-
-	public List<Student> getAllStudents() {
-		return bookservice1.getAllStudent();
+	public ResponseEntity<ResponseDTO<List<Student>>> getAllStudents() {
+		List<Student> students = bookService.getAllStudent();
+		ResponseDTO<List<Student>> responseDTO = new ResponseDTO<>("Students retrieved successfully", "success",
+				students);
+		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
 	}
 
 	@PostMapping("/studentsadd")
-	public Student createStudent(@RequestBody Student student) {
-		return bookservice1.createStudent(student);
+	public ResponseEntity<ResponseDTO<Student>> createStudent(@RequestBody Student student) {
+		Student savedStudent = bookService.createStudent(student);
+		ResponseDTO<Student> responseDTO = new ResponseDTO<>("Student added successfully", "success", savedStudent);
+		return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
 	}
 
 	@PutMapping("/students/{id}")
-
-	public Student updateStudent(@RequestBody Student student, @PathVariable("id") Integer id) {
-		return bookservice1.updateStudent(student, id);
+	public ResponseEntity<ResponseDTO<Student>> updateStudent(@RequestBody Student student,
+			@PathVariable("id") Integer id) {
+		Student updatedStudent = bookService.updateStudent(student, id);
+		ResponseDTO<Student> responseDTO = new ResponseDTO<>("Student updated successfully", "success", updatedStudent);
+		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
 	}
 
 	@DeleteMapping("/students/{id}")
-	public String deleteStudent(@PathVariable("id") Integer id) {
-		bookservice1.deleteStudent(id);
-		return "deleted";
+	public ResponseEntity<ResponseDTO<Void>> deleteStudent(@PathVariable("id") Integer id) {
+		bookService.deleteStudent(id);
+		ResponseDTO<Void> responseDTO = new ResponseDTO<>("Student deleted successfully", "success", null);
+		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
 	}
 
-	@PostMapping("assign/{studentId}/{bookId}")
-	public void assignBookToStudent(@PathVariable Integer bookId, @PathVariable Integer studentId) {
-		bookservice1.assignBookToStudent(bookId, studentId);
+	@PostMapping("/assign/{studentId}/{bookId}")
+	public ResponseEntity<ResponseDTO<Void>> assignBookToStudent(@PathVariable Integer studentId,
+			@PathVariable Integer bookId) {
+		bookService.assignBookToStudent(bookId, studentId);
+		ResponseDTO<Void> responseDTO = new ResponseDTO<>("Book assigned to student successfully", "success", null);
+		return new ResponseEntity<>(responseDTO, HttpStatus.OK);
 	}
-
 }
